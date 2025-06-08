@@ -4,6 +4,7 @@ import Navigation from '@/components/Navigation';
 import Dashboard from '@/components/Dashboard';
 import Accounts from '@/components/Accounts';
 import Transfers from '@/components/Transfers';
+import Deposit from '@/components/Deposit';
 import History from '@/components/History';
 import Settings from '@/components/Settings';
 
@@ -18,6 +19,8 @@ const Index = () => {
         return <Accounts />;
       case 'transfers':
         return <Transfers />;
+      case 'deposits':
+        return <Deposit />;
       case 'history':
         return <History />;
       case 'settings':

@@ -1,7 +1,6 @@
 
-import { useState } from 'react';
-import { Home, CreditCard, ArrowLeftRight, History, Settings, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LayoutDashboard, CreditCard, ArrowLeftRight, History, Settings, Wallet } from 'lucide-react';
 
 interface NavigationProps {
   activeTab: string;
@@ -9,111 +8,76 @@ interface NavigationProps {
 }
 
 const Navigation = ({ activeTab, setActiveTab }: NavigationProps) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const navItems = [
-    { id: 'dashboard', label: 'Tableau de bord', icon: Home },
+    { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
     { id: 'accounts', label: 'Comptes', icon: CreditCard },
     { id: 'transfers', label: 'Virements', icon: ArrowLeftRight },
+    { id: 'deposits', label: 'Retraits/Dépôts', icon: Wallet },
     { id: 'history', label: 'Historique', icon: History },
     { id: 'settings', label: 'Paramètres', icon: Settings },
   ];
 
   return (
-    <>
-      {/* Desktop Navigation */}
-      <nav className="hidden md:flex bg-white border-b border-border card-shadow">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-8">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 banking-gradient rounded-lg flex items-center justify-center">
-                  <CreditCard className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-foreground">BanqueDigitale</span>
-              </div>
-              
-              <div className="flex space-x-1">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Button
-                      key={item.id}
-                      variant={activeTab === item.id ? "default" : "ghost"}
-                      className={`flex items-center space-x-2 transition-all duration-200 ${
-                        activeTab === item.id 
-                          ? 'banking-gradient text-white shadow-md' 
-                          : 'hover:bg-secondary/80'
-                      }`}
-                      onClick={() => setActiveTab(item.id)}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{item.label}</span>
-                    </Button>
-                  );
-                })}
-              </div>
+    <nav className="bg-card border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-card/95">
+      <div className="container mx-auto max-w-7xl px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 banking-gradient rounded-lg flex items-center justify-center">
+              <CreditCard className="w-5 h-5 text-white" />
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-xs font-medium text-primary-foreground">JD</span>
-              </div>
-            </div>
+            <h1 className="text-xl font-bold text-foreground">BanqueDigitale</h1>
           </div>
-        </div>
-      </nav>
 
-      {/* Mobile Navigation */}
-      <nav className="md:hidden bg-white border-b border-border card-shadow">
-        <div className="px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 banking-gradient rounded-lg flex items-center justify-center">
-                <CreditCard className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-bold text-foreground">BanqueDigitale</span>
-            </div>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          {/* Navigation Items */}
+          <div className="hidden md:flex items-center space-x-2">
+            {navItems.map((item) => {
+              const IconComponent = item.icon;
+              return (
+                <Button
+                  key={item.id}
+                  variant={activeTab === item.id ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setActiveTab(item.id)}
+                  className={activeTab === item.id ? "banking-gradient" : ""}
+                >
+                  <IconComponent className="w-4 h-4 mr-2" />
+                  {item.label}
+                </Button>
+              );
+            })}
+          </div>
+
+          {/* Mobile Navigation */}
+          <div className="md:hidden">
+            <Button variant="ghost" size="sm">
+              Menu
             </Button>
           </div>
         </div>
-        
-        {isMobileMenuOpen && (
-          <div className="px-4 py-4 border-t border-border bg-secondary/20">
-            <div className="space-y-2">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Button
-                    key={item.id}
-                    variant={activeTab === item.id ? "default" : "ghost"}
-                    className={`w-full justify-start space-x-2 ${
-                      activeTab === item.id 
-                        ? 'banking-gradient text-white' 
-                        : ''
-                    }`}
-                    onClick={() => {
-                      setActiveTab(item.id);
-                      setIsMobileMenuOpen(false);
-                    }}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </Button>
-                );
-              })}
-            </div>
+
+        {/* Mobile Navigation Items */}
+        <div className="md:hidden pb-4">
+          <div className="grid grid-cols-3 gap-2">
+            {navItems.map((item) => {
+              const IconComponent = item.icon;
+              return (
+                <Button
+                  key={item.id}
+                  variant={activeTab === item.id ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setActiveTab(item.id)}
+                  className={`flex flex-col h-auto py-2 ${activeTab === item.id ? "banking-gradient" : ""}`}
+                >
+                  <IconComponent className="w-4 h-4 mb-1" />
+                  <span className="text-xs">{item.label.split('/')[0]}</span>
+                </Button>
+              );
+            })}
           </div>
-        )}
-      </nav>
-    </>
+        </div>
+      </div>
+    </nav>
   );
 };
 
