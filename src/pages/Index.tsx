@@ -1,12 +1,38 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState } from 'react';
+import Navigation from '@/components/Navigation';
+import Dashboard from '@/components/Dashboard';
+import Accounts from '@/components/Accounts';
+import Transfers from '@/components/Transfers';
+import History from '@/components/History';
+import Settings from '@/components/Settings';
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState('dashboard');
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'accounts':
+        return <Accounts />;
+      case 'transfers':
+        return <Transfers />;
+      case 'history':
+        return <History />;
+      case 'settings':
+        return <Settings />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/5 to-accent/5">
+      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+      <main className="container mx-auto max-w-7xl">
+        {renderContent()}
+      </main>
     </div>
   );
 };
