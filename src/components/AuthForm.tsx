@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { LogIn, UserPlus } from 'lucide-react';
+import { LogIn, UserPlus, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const AuthForm = () => {
   const [email, setEmail] = useState('');
@@ -15,13 +16,32 @@ const AuthForm = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('signin');
   const { toast } = useToast();
+
+  // Fonction pour créer un compte de test
+  const createTestAccount = () => {
+    setEmail('test@banquedigitale.com');
+    setPassword('test123456');
+    setFirstName('Utilisateur');
+    setLastName('Test');
+    setActiveTab('signup');
+  };
 
   const handleSignUp = async () => {
     if (!email || !password || !firstName || !lastName) {
       toast({
         title: "Erreur",
         description: "Veuillez remplir tous les champs",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast({
+        title: "Erreur",
+        description: "Le mot de passe doit contenir au moins 6 caractères",
         variant: "destructive"
       });
       return;
@@ -42,16 +62,26 @@ const AuthForm = () => {
       });
 
       if (error) {
-        toast({
-          title: "Erreur d'inscription",
-          description: error.message,
-          variant: "destructive"
-        });
+        if (error.message.includes('User already registered')) {
+          toast({
+            title: "Compte existant",
+            description: "Ce compte existe déjà. Utilisez l'onglet connexion.",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Erreur d'inscription",
+            description: error.message,
+            variant: "destructive"
+          });
+        }
       } else {
         toast({
           title: "Inscription réussie",
-          description: "Vérifiez votre email pour confirmer votre compte"
+          description: "Compte créé avec succès ! Vous pouvez maintenant vous connecter."
         });
+        // Basculer vers l'onglet connexion après inscription réussie
+        setActiveTab('signin');
       }
     } catch (error) {
       toast({
@@ -82,11 +112,19 @@ const AuthForm = () => {
       });
 
       if (error) {
-        toast({
-          title: "Erreur de connexion",
-          description: error.message,
-          variant: "destructive"
-        });
+        if (error.message.includes('Invalid login credentials')) {
+          toast({
+            title: "Erreur de connexion",
+            description: "Email ou mot de passe incorrect",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Erreur de connexion",
+            description: error.message,
+            variant: "destructive"
+          });
+        }
       } else {
         toast({
           title: "Connexion réussie",
@@ -115,7 +153,22 @@ const AuthForm = () => {
           <p className="text-muted-foreground">Accédez à votre espace bancaire</p>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="signin" className="space-y-4">
+          {/* Alert pour compte de test */}
+          <Alert className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Pas de compte ? 
+              <Button 
+                variant="link" 
+                onClick={createTestAccount}
+                className="p-0 h-auto font-normal text-primary ml-1"
+              >
+                Créer un compte de test
+              </Button>
+            </AlertDescription>
+          </Alert>
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Connexion</TabsTrigger>
               <TabsTrigger value="signup">Inscription</TabsTrigger>
@@ -184,7 +237,7 @@ const AuthForm = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="signup-password">Mot de passe</Label>
+                <Label htmlFor="signup-password">Mot de passe (min. 6 caractères)</Label>
                 <Input
                   id="signup-password"
                   type="password"
